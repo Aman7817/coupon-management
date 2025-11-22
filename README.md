@@ -1,74 +1,93 @@
-# Coupon Management (Assignment)
+# 🎟️ Coupon Management — Assignment (Software Developer Role)
 
-Assignment Name: Coupon Management
-Role: Software Developer
-A lightweight, cleanly structured HTTP service that supports creating coupons, evaluating eligibility rules, and returning the best coupon for a given user + cart context. Designed according to assignment requirements using in-memory persistence, Node.js, and Express.
+A clean, lightweight Node.js + Express service that implements:
 
+✔ Coupon creation  
+✔ Eligibility rules  
+✔ Best-coupon selection logic  
+✔ Usage-limit per user  
+✔ Redeem endpoint  
+✔ Optional seed coupons  
+✔ Fully working deployed demo  
 
+Project follows all requirements exactly as mentioned in the assignment.
 
+---
 
-# Project Overview
+## 📦 Project Overview
 
-This project implements a simple REST API for an e-commerce coupon system.
-The service allows you to:
+This service allows:
 
-Create coupons with eligibility rules
+- Creating coupons with rules  
+- Storing coupons in an in-memory store (no DB needed)  
+- Checking the best coupon for a user & cart  
+- Enforcing per-user usage limits  
+- Redeeming coupons  
+- Testing via Postman  
 
-Store coupons in-memory (no database required)
+---
 
-Determine the best applicable coupon for a user and cart
+## 🛠 Tech Stack
 
-Enforce usageLimitPerUser
+- **Node.js (ES Modules)**
+- **Express.js**
+- **uuid** for IDs
+- **In-memory storage**
+- No database used (assignment guideline)
 
-Redeem coupons (optional but implemented)
+---
 
-🛠️ Tech Stack
+## 📁 Folder Structure
 
-Node.js (ES Modules)
-
-Express.js
-
-In-memory store (plain JS objects)
-
-uuid (unique coupon IDs)
-
-No external DB is used as per assignment guidelines.
-
-📁 Folder Structure
 src/
- ├── app.js
- ├── routes/
- │    └── couponRoutes.js
- ├── controllers/
- │    └── couponController.js
- ├── services/
- │    └── couponService.js
- ├── utils/
- │    ├── validators.js
- │    ├── discountCalculator.js
- │    └── cartUtils.js
- ├── database/
- │    ├── store.js
- │    └── seeds.js   ← optional seed coupons
+├── app.js
+├── routes/
+│ └── couponRoutes.js
+├── controllers/
+│ └── couponController.js
+├── services/
+│ └── couponService.js
+├── utils/
+│ ├── validators.js
+│ ├── discountCalculator.js
+│ └── cartUtils.js
+├── database/
+│ ├── store.js
+│ └── seeds.js
+screenshots/
+├── create-coupon.jpg
+├── list-coupons.jpg
+├── best-coupon.jpg
+├── redeem-coupon.jpg
+└── health-check.jpg
 
-▶️ How to Run
-Prerequisites
 
+---
+
+## ▶️ How to Run
+
+### **Requirements**
 Node.js 18+
 
-Steps
+### **Steps**
+```bash
 npm install
-npm run dev     # or npm start
+npm run dev   # or npm start
 
 
-Server starts on: http://localhost:4000
+Server runs at:
+http://localhost:4000
 
-📡 APIs
+Deployed version (Render):
+https://coupon-management-857x.onrender.com
+
+📡 API Documentation
 1️⃣ Create Coupon
 
 POST /api/coupons/create
 
-Request Body Example
+Example request:
+
 {
   "code": "WELCOME100",
   "description": "Flat ₹100 off",
@@ -84,136 +103,72 @@ Request Body Example
   }
 }
 
-Responses
-
-✔ 201 Created — coupon added
-
-❌ 409 Conflict — duplicate coupon code
-
-❌ 400 Bad Request — invalid fields
-
-2️⃣ List All Coupons
+2️⃣ List Coupons
 
 GET /api/coupons
-Returns all coupons in memory (for debugging/review testing).
 
-3️⃣ Get Best Coupon
+3️⃣ Best Coupon
 
 POST /api/coupons/best
 
-Request
-{
-  "user": {
-    "userId": "u123",
-    "userTier": "NEW",
-    "country": "IN",
-    "lifetimeSpend": 1200,
-    "ordersPlaced": 0
-  },
-  "cart": {
-    "items": [
-      { "productId": "p1", "category": "electronics", "unitPrice": 1500, "quantity": 1 }
-    ]
-  }
-}
-
-Response Example
-{
-  "success": true,
-  "result": {
-    "bestCoupon": { ... },
-    "discount": 100,
-    "cartValue": 1500
-  }
-}
-
-
-If no coupon applies:
-
-{
-  "success": true,
-  "result": {
-    "bestCoupon": null,
-    "discount": 0,
-    "cartValue": 1500
-  }
-}
-
-4️⃣ Redeem Coupon (Usage Counter)
+4️⃣ Redeem Coupon
 
 POST /api/coupons/redeem
 
-Marks a coupon as used by a user.
+Body:
 
-Example
-{
-  "userId": "u123",
-  "couponCode": "WELCOME100"
-}
+{ "userId": "u123", "couponCode": "WELCOME100" }
 
-
-Usage is stored in-memory inside store.userUsage.
-
-5️⃣ Reset Store (Testing Utility)
+5️⃣ Reset Store (for testing)
 
 POST /api/coupons/reset
 
-Clears all coupons + user usage.
-
+🌱 Auto-Loaded Seed Coupons
+Code	Description
+WELCOME100	Flat 100 off
+NEWUSER10	10% off (max ₹150)
+ELECTRO5	5% off electronics
+FASHION50	Flat 50 off (min 2 items)
 🔍 Duplicate Handling
 
-Coupon codes are treated as case-insensitive:
+Coupon codes are case-insensitive
 WELCOME100 == welcome100
 
-Duplicate creation → HTTP 409 Conflict
+Duplicate → HTTP 409 Conflict
 
-🧮 Usage Counting
+📉 Usage-Limit Logic
 
-best API checks usage count against usageLimitPerUser
+best API checks usage
 
-redeem API increments usage count
+redeem API increments usage
 
-Data stored in-memory as:
+Stored as:
 
-userUsage["userId:couponCode"] = count
+store.userUsage["userId:couponCode"]
 
-🌱 Seed Coupons (Optional but added)
+📸 Postman Screenshots
+1️⃣ Create Coupon
 
-To help the reviewer quickly test the system, 4 coupons auto-load at startup:
+2️⃣ List Coupons
 
-WELCOME100 (flat 100 off, new users, first order only)
+3️⃣ Best Coupon
 
-NEWUSER10 (10% off, max 150)
+4️⃣ Redeem Coupon
 
-ELECTRO5 (electronics only)
-
-FASHION50 (flat 50 on fashion, min 2 items)
-
-🧪 Testing
-
-Use:
-
-Postman
-
-Thunder Client
-
-curl
-
-All API examples are included above.
+5️⃣ Health Check
 
 🤖 AI Usage Note
 
 I used ChatGPT for:
 
-Structuring project
+Structuring modules
 
-Designing eligibility logic
+Eligibility & discount logic
 
-Writing discount and usage-limit functions
+Designing service/controller separation
 
-Improving controller/service separation
+Improving validation logic
 
-Generating README
+Writing README and documentation
 
-Prompts used focused on:
-"Implement coupon eligibility rules, usageLimitPerUser, and best-coupon selection cleanly in Node.js."
+Prompts were focused on implementing clean Node.js logic according to assignment rules.
