@@ -25,7 +25,7 @@ router.get('/', listCoupons);
  * POST /api/v1/coupons/best
  * body: { user: {...}, cart: {...} }
  */
-router.post('/best', getBestCoupon);
+router.get('/best', getBestCoupon);
 
 /**
  * POST /api/v1/coupons/reset
